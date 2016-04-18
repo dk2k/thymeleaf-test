@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+ "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+ <meta attribute="class-description">
+         This class contains the user detail. 
+ </meta>
+ 
+ <class name="ru.outofrange.model.UserEntity" table="USER">
+ <cache usage="read-write"/>
+ <id name="id" type="long" column="ID" >
+ 	 <generator class="native"/> 
+ </id>
+ 
+ 
+ <property name="name" type="java.lang.String">
+ 	<column name="NAME" length="100" not-null="true"/>
+ </property>
+ <property name="username" type="java.lang.String" >
+ 	<column name="USERNAME" length="100" not-null="true" unique="true"/>
+ </property>
+ <property name="password" type="java.lang.String">
+ 	<column name="PASSWORD" length="500" not-null="true"/>
+ </property>
+  <property name="email" type="java.lang.String">
+ 	<column name="EMAIL" length="50" not-null="true"/>
+ </property>
+ <property name="gender" column="GENDER">
+    <type name="org.hibernate.type.EnumType">
+        <param name="enumClass">ru.outofrange.model.Gender</param>
+        <param name="useNamed">true</param>
+    </type>
+</property>
+ <property name="age" type="java.lang.Integer">
+ 	<column name="AGE" not-null="true"/>
+ </property>
+ <property name="registered" type="java.util.Date" not-null="false">
+ 	<column name="REGISTERED" sql-type="timestamp" default="now()" not-null="true"/>
+ </property>
+ </class>
+</hibernate-mapping>

@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Initial page</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<div th:if="${logged_user != null}">
+    	<p th:text="'You are logged in as [' + ${logged_user} + '].'" /><br />
+    </div>
+    <div th:if="${logged_user == null}">
+        <p th:text="'You aren\'t logged in!'" /><br />
+    </div>
+    
+    <div th:if="${message != null}">
+    	<p th:text="${message}" /><br />
+    </div>
+    
+    <p th:text="'Initial page'" />
+    <br />
+    <a th:href="@{/login}">Login page</a><br />
+    <a th:href="@{/create}">Create user</a><br />
+    <a th:href="@{/allusers}">View all users</a><br />
+    <a th:href="@{/search}">Search for users</a><br />
+    <a th:href="@{/logout}">Log out</a><br />
+</body>
+</html>

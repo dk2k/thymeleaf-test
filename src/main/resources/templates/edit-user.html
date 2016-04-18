@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head>
+        <title>User update page </title>
+    </head>
+    <body>
+        <form th:action="@{/user/edit/} + ${user.id}" method="post">
+            <div><label> User Name : <input type="text" name="username" th:value="${user.username}" /> </label></div>
+            <div><label> Name : <input type="text" name="name" th:value="${user.name}"/> </label></div>
+            <div><label> Email : <input type="text" name="email" th:value="${user.email}"/> </label></div>
+            <div><label> Age : <input type="text" name="age" th:value="${user.age}"/> </label></div>
+            <div><label> Gender : <select name="gender">
+            	<option th:each="gender : ${T(ru.outofrange.model.Gender).values()}"
+                        th:value="${gender}" th:text="#{__${gender.value}__}" th:selected="${gender == user.gender}">opt</option>
+            
+            					  </select>
+            </label></div>
+            
+            <div><input type="submit" value="Update"/></div>
+            
+            
+            
+        </form>
+    </body>
+</html>

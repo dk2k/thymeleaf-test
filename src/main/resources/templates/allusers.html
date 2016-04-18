@@ -1,0 +1,40 @@
+<!DOCTYPE HTML> 
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+	  <title>List of all users</title>
+	  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	</head>
+<body>
+
+  <div th:if="${users.size() != 0}">
+    <table border="1" style="width:800px">
+      <tr>
+        <td>Name</td>
+    	<td>Username/login</td>
+    	<!--<td>Encrypted password</td>-->
+    	<td>Age</td>
+    	<td>Email</td>
+    	<td>Gender</td>
+    	<td>Date of registration</td>
+      </tr>
+      <tr th:each="user : ${users}">
+        <td th:text="${user.name}"></td>
+        <td th:text="${user.username}"></td>
+        <!--<td th:text="${user.password}"></td>-->
+        <td th:text="${user.age}"></td>
+        <td th:text="${user.email}"></td>
+        <td th:text="${user.gender}"></td>
+        <td th:text="${user.registered}"></td>
+        <td>
+			  <a th:href="@{/user/edit/} + ${user.id}">Edit</a><br/>
+			  <a th:href="@{/user/delete/} + ${user.id}">Delete</a><br/>
+			
+		</td>
+      </tr>
+    </table>
+  </div>
+  <div th:if="${users.size() == 0}">
+    <p>There's no users in DB so far</p>
+  </div>
+</body>
+</html>

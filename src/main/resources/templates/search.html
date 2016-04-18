@@ -1,0 +1,243 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+
+	<meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
+	<meta th:name="_csrf" th:content="${_csrf.token}"/>
+
+    <title>Page for sophisticated search</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+	<link rel="stylesheet" type="text/css" media="screen"  
+       th:href="@{/css/bootstrap.min.css}" />
+	<script th:src="@{/js/jquery.1.10.2.min.js}"></script>
+
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css"/>
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+  
+    <script>
+  $(function() {
+
+	  $.datepicker.regional['ru'] = {
+			  monthNames: ['Яварь', 'Февраль', 'Март', 'Апрель',
+			  'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь',
+			  'Октябрь', 'Ноябрь', 'Декабрь'],
+			  dayNamesMin: ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
+			  firstDay: 1,
+			  };
+	  $.datepicker.setDefaults($.datepicker.regional['ru']);
+	  
+    $(".datepicker").datepicker({
+    		dateFormat: "yy-mm-dd"
+    }
+    );
+    
+  });
+  </script>
+
+<style>
+table.result_table, th, tr, td {
+    border: 1px solid black;
+}
+</style>
+
+</head>
+<body>
+<!-- http://www.mkyong.com/spring-mvc/spring-4-mvc-ajax-hello-world-example/ -->
+
+<nav class="navbar navbar-inverse">
+	<div class="container">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="#">Some Title</a>
+		</div>
+	</div>
+</nav>
+
+<div class="container" style="min-height: 500px">
+
+	<div class="starter-template">
+		<h1>Search Form</h1>
+		<br/>
+
+		<div id="feedback"></div>
+
+		<form class="form-horizontal" id="search-form">
+<table><tr><td>
+			
+				<label class="">Username</label>
+</td><td>			
+					<input type="text" class="" id="username"/>
+</td></tr>	
+<tr><td>
+				<label class="">Email</label>
+</td><td>			
+					<input type="text" class="" id="email"/>
+		
+</td></tr>			
+<tr><td>	
+				<label class="">Name</label>
+</td><td>			
+					<input type="text" class="" id="name"/>
+		
+</td></tr>	
+<tr><td>
+				<label class="">Upper Age</label>
+</td><td>				
+					<input type="text" class="" id="upperAge"/>
+		
+</td></tr>				
+<tr><td>
+				<label class="">Lower Age</label>
+</td><td>	
+					<input type="text" class="" id="lowerAge"/>
+			
+</td></tr>			
+<tr><td>
+				<label class="">Upper Date</label>
+</td><td>	
+					<input type="text" id="upperDate" class="datepicker"/>
+			
+</td></tr>	
+<tr><td>
+				<label class="">Lower Date</label>
+</td><td>	
+					<input type="datetime" id="lowerDate" class="datepicker"/>
+			
+</td></tr>				
+<tr><td>
+				<label class="col-sm-2 control-label">Gender</label>
+</td><td>		
+					<select id="gender">
+            	<option th:each="gender : ${T(ru.outofrange.model.Gender).values()}"
+                        th:value="${gender}" th:text="#{__${gender.value}__}">opt</option>
+                <option value="" selected="selected">Not specified</option>
+            		</select>
+			
+</td></tr>			
+<tr><td>		
+					<button type="submit" id="bth-search"
+						class="btn btn-primary btn-lg">Search</button>
+</td></tr>		
+</table>	
+		</form>
+
+	</div>
+
+</div>
+
+
+
+
+<script th:inline="javascript">
+	jQuery(document).ready(function($) {
+
+		$("#search-form").submit(function(event) {
+
+			// Disble the search button
+			enableSearchButton(false);
+
+			// Prevent the form from submitting via the browser.
+			event.preventDefault();
+
+			searchViaAjax();
+
+		});
+
+	});
+
+	function searchViaAjax() {
+
+		var search = {}
+		search["username"] = $("#username").val();
+		search["email"] = $("#email").val();
+		search["name"] = $("#name").val();
+
+		if ($("#gender").val() != '') {
+			search["gender"] = $("#gender").val();
+		} 
+		
+		search["lowerAge"] = $("#lowerAge").val();
+		search["upperAge"] = $("#upperAge").val();
+		search["lowerDate"] = $("#lowerDate").val();
+		search["upperDate"] = $("#upperDate").val();
+
+		var token = $("meta[name='_csrf']").attr("content");
+		var header = $("meta[name='_csrf_header']").attr("content");
+		
+		$.ajax({
+			type : "POST",
+			contentType : "application/json",
+			url : /*[[@{/api/getSearchResult}]]*/,
+			data : JSON.stringify(search),
+			dataType : 'json',
+			
+			beforeSend: function(xhr) {
+				xhr.setRequestHeader(header, token);
+	            xhr.setRequestHeader("Accept", "application/json");
+	            xhr.setRequestHeader("Content-Type", "application/json");
+	        },
+			
+			timeout : 100000,
+			success : function(data) {
+				console.log("SUCCESS: ", data);
+				display(data);
+			},
+			error : function(e) {
+				console.log("ERROR: ", e);
+				display(e);
+			},
+			done : function(e) {
+				console.log("DONE");
+				enableSearchButton(true);
+			}
+		});
+
+	}
+
+	function enableSearchButton(flag) {
+		$("#btn-search").prop("disabled", flag);
+	}
+
+	function display(data) { 
+		
+		var a = "";
+	if (data.result != null) {
+		$.each(data.result, function() {
+		    a += (" <tr>" +
+		            "<td>" + this.name + "</td>" +
+		            "<td>" + this.username + "</td>" +
+		            "<td>" + this.email + "</td>" +
+		            "<td>" + this.age + "</td>" +
+		            "<td>" + this.gender + "</td>" +
+		            "<td>" + this.registered + "</td>" +
+		            "</tr>");
+		});
+	} else {
+		a="<tr><td>NO USERS FOUND</td></tr>"
+	}
+		var mytable = '<div align="center"><table class="result_table">' +
+        "<thead> " +
+        "<tr>" +
+        "<th> <strong> Name </strong></th>" +
+        "<th> <strong> Username </strong></th>" +
+        "<th> <strong> Email </strong></th>" +
+        "<th> <strong> Age </strong></th>" +
+        "<th> <strong> Gender </strong></th>" +
+        "<th> <strong> Registration date </strong></th>" +
+        "</tr> </thead>" +
+        " <tbody>" +
+        a
+        +
+        "</tbody>" +
+        "</table><br/></div>";  
+       
+        //var json = "<h4>Ajax Response</h4><pre>"
+		//	+ JSON.stringify(data, null, 4) + "</pre>";
+        
+		$('#feedback').html(mytable /*+ json*/);
+	}
+</script>
+
+</body>
+</html>
